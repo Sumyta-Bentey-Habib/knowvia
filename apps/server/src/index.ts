@@ -1,38 +1,12 @@
-import { ApolloServer } from "@apollo/server";
-import { expressMiddleware } from "@as-integrations/express5";
-import cors from "cors";
-import express from "express";
+import "dotenv/config";
 
 import { prisma } from "./lib/prisma.js";
-import { resolvers } from "./graphql/resolvers.js";
-import { typeDefs } from "./graphql/typeDefs.js";
-import type { GraphQLContext } from "./types/context.js";
-
-const server = new ApolloServer<GraphQLContext>({
-  typeDefs,
-  resolvers,
-});
+import { createApp } from "./app.js";
 
 async function startServer() {
-  const app = express();
   const PORT = Number(process.env.PORT) || 4000;
 
-  await server.start();
-
-  app.get("/health", (_req, res) => {
-    res.json({ status: "OK" });
-  });
-
-  app.use(
-    "/graphql",
-    cors(),
-    express.json(),
-    expressMiddleware(server, {
-      context: async () => ({
-        prisma,
-      }),
-    }),
-  );
+  const { app } = await createApp({ prisma });
 
   app.listen(PORT, () => {
     console.log(`🚀 Server running at http://localhost:${PORT}/graphql`);
