@@ -74,12 +74,14 @@ model User {
   updatedAt     DateTime @updatedAt
 
   creatorProfile          CreatorProfile?
-  reviewedCreatorProfiles CreatorProfile[]    @relation("CreatorProfileReviewer")
+  reviewedCreatorProfiles CreatorProfile[]     @relation("CreatorProfileReviewer")
   submittedResources      ResourceSubmission[] @relation("SubmissionAuthor")
   reviewedSubmissions     ResourceSubmission[] @relation("SubmissionReviewer")
   createdResources        Resource[]           @relation("ResourceAuthor")
   bookmarks               Bookmark[]
   interests               UserInterest[]
+  sessions                Session[]
+  accounts                Account[]
 }
 
 model CreatorProfile {
@@ -109,7 +111,7 @@ model Provider {
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
 
-  resources    Resource[]
+  resources   Resource[]
   submissions ResourceSubmission[]
 }
 
@@ -123,8 +125,8 @@ model Category {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
-  parent             Category?          @relation("CategoryTree", fields: [parentId], references: [id], onDelete: SetNull)
-  children           Category[]         @relation("CategoryTree")
+  parent             Category?            @relation("CategoryTree", fields: [parentId], references: [id], onDelete: SetNull)
+  children           Category[]           @relation("CategoryTree")
   resourceCategories ResourceCategory[]
   submissions        ResourceSubmission[]
   userInterests      UserInterest[]
@@ -133,30 +135,30 @@ model Category {
 }
 
 model Resource {
-  id                  String           @id @default(uuid())
-  title               String
-  slug                String           @unique
-  summary             String?          @db.Text
-  url                 String           @db.Text
-  thumbnailUrl        String?          @db.Text
-  resourceType        ResourceType
-  accessType          AccessType       @default(UNKNOWN)
-  difficulty          DifficultyLevel  @default(UNKNOWN)
-  language            String?
-  durationMinutes     Int?
-  status              ResourceStatus   @default(DRAFT)
-  source              ResourceSource   @default(ADMIN_CURATED)
-  providerId          String
-  createdById         String?
-  submissionId        String?          @unique
-  createdAt           DateTime         @default(now())
-  updatedAt           DateTime         @updatedAt
+  id              String          @id @default(uuid())
+  title           String
+  slug            String          @unique
+  summary         String?         @db.Text
+  url             String          @db.Text
+  thumbnailUrl    String?         @db.Text
+  resourceType    ResourceType
+  accessType      AccessType      @default(UNKNOWN)
+  difficulty      DifficultyLevel @default(UNKNOWN)
+  language        String?
+  durationMinutes Int?
+  status          ResourceStatus  @default(DRAFT)
+  source          ResourceSource  @default(ADMIN_CURATED)
+  providerId      String
+  createdById     String?
+  submissionId    String?         @unique
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
 
-  provider     Provider           @relation(fields: [providerId], references: [id], onDelete: Restrict)
-  createdBy    User?              @relation("ResourceAuthor", fields: [createdById], references: [id], onDelete: SetNull)
-  submission   ResourceSubmission? @relation(fields: [submissionId], references: [id], onDelete: SetNull)
-  categories   ResourceCategory[]
-  bookmarks    Bookmark[]
+  provider   Provider            @relation(fields: [providerId], references: [id], onDelete: Restrict)
+  createdBy  User?               @relation("ResourceAuthor", fields: [createdById], references: [id], onDelete: SetNull)
+  submission ResourceSubmission? @relation(fields: [submissionId], references: [id], onDelete: SetNull)
+  categories ResourceCategory[]
+  bookmarks  Bookmark[]
 
   @@index([providerId, status])
   @@index([status, createdAt])
@@ -175,30 +177,30 @@ model ResourceCategory {
 }
 
 model ResourceSubmission {
-  id               String            @id @default(uuid())
-  title            String
-  url              String            @db.Text
-  summary          String?           @db.Text
-  thumbnailUrl     String?           @db.Text
-  resourceType     ResourceType
-  accessType       AccessType        @default(UNKNOWN)
-  difficulty       DifficultyLevel   @default(UNKNOWN)
-  language         String?
-  durationMinutes  Int?
-  status           SubmissionStatus  @default(PENDING)
-  submittedById    String
-  providerId       String
-  categoryId       String?
-  reviewedById     String?
-  reviewedAt       DateTime?
-  rejectionReason  String?           @db.Text
-  createdAt        DateTime          @default(now())
-  updatedAt        DateTime          @updatedAt
+  id              String           @id @default(uuid())
+  title           String
+  url             String           @db.Text
+  summary         String?          @db.Text
+  thumbnailUrl    String?          @db.Text
+  resourceType    ResourceType
+  accessType      AccessType       @default(UNKNOWN)
+  difficulty      DifficultyLevel  @default(UNKNOWN)
+  language        String?
+  durationMinutes Int?
+  status          SubmissionStatus @default(PENDING)
+  submittedById   String
+  providerId      String
+  categoryId      String?
+  reviewedById    String?
+  reviewedAt      DateTime?
+  rejectionReason String?          @db.Text
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
 
-  submittedBy User      @relation("SubmissionAuthor", fields: [submittedById], references: [id], onDelete: Restrict)
-  reviewedBy  User?     @relation("SubmissionReviewer", fields: [reviewedById], references: [id], onDelete: SetNull)
-  provider    Provider  @relation(fields: [providerId], references: [id], onDelete: Restrict)
-  category    Category? @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+  submittedBy       User      @relation("SubmissionAuthor", fields: [submittedById], references: [id], onDelete: Restrict)
+  reviewedBy        User?     @relation("SubmissionReviewer", fields: [reviewedById], references: [id], onDelete: SetNull)
+  provider          Provider  @relation(fields: [providerId], references: [id], onDelete: Restrict)
+  category          Category? @relation(fields: [categoryId], references: [id], onDelete: SetNull)
   publishedResource Resource?
 
   @@index([status, createdAt])
@@ -228,4 +230,52 @@ model UserInterest {
 
   @@id([userId, categoryId])
   @@index([categoryId])
+}
+
+model Session {
+  id        String   @id
+  expiresAt DateTime
+  token     String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  ipAddress String?
+  userAgent String?
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([token])
+  @@index([userId])
+  @@map("session")
+}
+
+model Account {
+  id                    String    @id
+  accountId             String
+  providerId            String
+  userId                String
+  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  accessToken           String?
+  refreshToken          String?
+  idToken               String?
+  accessTokenExpiresAt  DateTime?
+  refreshTokenExpiresAt DateTime?
+  scope                 String?
+  password              String?
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
+
+  @@index([userId])
+  @@map("account")
+}
+
+model Verification {
+  id         String   @id
+  identifier String
+  value      String
+  expiresAt  DateTime
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@index([identifier])
+  @@map("verification")
 }

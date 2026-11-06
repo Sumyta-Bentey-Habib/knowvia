@@ -14,7 +14,14 @@ type ResourceParent = {
 
 export const resolvers = {
   Query: {
-    health: () => "Learniverse API is running 🚀",
+    health: () => "Knowvia API is running 🚀",
+    me: (
+      _parent: unknown,
+      _args: unknown,
+      context: GraphQLContext,
+    ) => {
+      return context.session?.user ?? null;
+    },
 
     providers: async (
       _parent: unknown,

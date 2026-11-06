@@ -37,6 +37,12 @@ export const typeDefs = `#graphql
     websiteUrl: String
   }
 
+    enum UserRole {
+    USER
+    CREATOR
+    ADMIN
+  }
+
   type Category {
     id: ID!
     name: String!
@@ -99,5 +105,13 @@ export const typeDefs = `#graphql
       filters: ResourceFiltersInput
       pagination: PaginationInput
     ): ResourceConnection!
+  }
+    type AuthUser {
+    id: ID!
+    name: String!
+    email: String!
+    emailVerified: Boolean!
+    image: String
+    role: UserRole!
   }
 `;
