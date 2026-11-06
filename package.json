@@ -1,20 +1,14 @@
 {
   "name": "learniverse",
-  "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "private": true,
+  "packageManager": "pnpm@11.28.11",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "devEngines": {
-    "packageManager": {
-      "name": "pnpm",
-      "version": "^11.21.0",
-      "onFail": "download"
-    }
-  },
-  "type": "module"
+    "dev:web": "pnpm --filter web dev",
+    "dev:server": "pnpm --filter server dev",
+    "build:web": "pnpm --filter web build",
+    "build:server": "pnpm --filter server build",
+    "lint:web": "pnpm --filter web lint",
+    "typecheck:web": "pnpm --filter web exec tsc --noEmit",
+    "typecheck:server": "pnpm --filter server exec tsc --noEmit"
+  }
 }
