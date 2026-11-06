@@ -14,7 +14,7 @@ type ResourceParent = {
 
 export const resolvers = {
   Query: {
-    health: () => "Knowvia API is running 🚀",
+    health: () => "learnbraid API is running 🚀",
     me: (
       _parent: unknown,
       _args: unknown,
