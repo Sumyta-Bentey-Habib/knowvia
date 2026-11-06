@@ -3,19 +3,12 @@ import { expressMiddleware } from "@as-integrations/express5";
 import cors from "cors";
 import express from "express";
 
-const typeDefs = `#graphql
-  type Query {
-    health: String!
-  }
-`;
+import { prisma } from "./lib/prisma.js";
+import { resolvers } from "./graphql/resolvers.js";
+import { typeDefs } from "./graphql/typeDefs.js";
+import type { GraphQLContext } from "./types/context.js";
 
-const resolvers = {
-  Query: {
-    health: () => "Learniverse API is running 🚀",
-  },
-};
-
-const server = new ApolloServer({
+const server = new ApolloServer<GraphQLContext>({
   typeDefs,
   resolvers,
 });
@@ -34,7 +27,11 @@ async function startServer() {
     "/graphql",
     cors(),
     express.json(),
-    expressMiddleware(server),
+    expressMiddleware(server, {
+      context: async () => ({
+        prisma,
+      }),
+    }),
   );
 
   app.listen(PORT, () => {
