@@ -1,3 +1,4 @@
+
 export const typeDefs = `#graphql
   enum ResourceType {
     ARTICLE
@@ -61,10 +62,42 @@ export const typeDefs = `#graphql
     categories: [Category!]!
   }
 
+  input ResourceFiltersInput {
+    search: String
+    providerSlug: String
+    categorySlug: String
+    resourceType: ResourceType
+    difficulty: DifficultyLevel
+    accessType: AccessType
+  }
+
+  input PaginationInput {
+    page: Int = 1
+    limit: Int = 12
+  }
+
+  type PageInfo {
+    totalItems: Int!
+    currentPage: Int!
+    pageSize: Int!
+    totalPages: Int!
+    hasNextPage: Boolean!
+    hasPreviousPage: Boolean!
+  }
+
+  type ResourceConnection {
+    items: [Resource!]!
+    pageInfo: PageInfo!
+  }
+
   type Query {
     health: String!
     providers: [Provider!]!
     categories: [Category!]!
-    resources: [Resource!]!
+
+    resources(
+      filters: ResourceFiltersInput
+      pagination: PaginationInput
+    ): ResourceConnection!
   }
 `;
