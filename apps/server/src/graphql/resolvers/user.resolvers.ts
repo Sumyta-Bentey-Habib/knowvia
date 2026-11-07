@@ -1,7 +1,7 @@
 
-import { GraphQLError } from "graphql";
 import type { GraphQLContext } from "../../types/context.js";
-import { requireAuth } from "./shared.js";
+import { requireAuth } from "../../lib/auth-guards.js";
+import { badInput } from "./shared.js";
 
 export const userResolvers = {
     Query: {
@@ -59,12 +59,7 @@ export const userResolvers = {
                 });
 
                 if (categories.length !== categoryIds.length) {
-                    throw new GraphQLError(
-                        "One or more selected categories are invalid or inactive.",
-                        {
-                            extensions: { code: "BAD_USER_INPUT" },
-                        },
-                    );
+                  badInput("One or more selected categories are invalid or inactive.");
                 }
 
                 // Replace the user's existing interests.

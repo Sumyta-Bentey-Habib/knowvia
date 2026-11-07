@@ -1,5 +1,4 @@
 import { GraphQLError } from "graphql";
-import type { GraphQLContext } from "../../types/context.js";
 
 export const resourceInclude = {
     provider: true,
@@ -64,15 +63,4 @@ export function createResourceSlug(
             .slice(0, 80) || "resource";
 
     return `${baseSlug}-${uniqueId}`;
-}
-export function requireAuth(context: GraphQLContext) {
-    const session = context.session;
-
-    if (!session) {
-        throw new GraphQLError("Authentication required.", {
-            extensions: { code: "UNAUTHENTICATED" },
-        });
-    }
-
-    return session.user;
 }

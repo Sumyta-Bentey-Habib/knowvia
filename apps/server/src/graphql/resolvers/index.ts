@@ -19,6 +19,7 @@ export const resolvers = {
         ...resourceResolvers.Mutation,
         ...creatorResolvers.Mutation,
         ...submissionResolvers.Mutation,
+        ...userResolvers.Mutation,
     },
 
     Resource: resourceResolvers.Resource,

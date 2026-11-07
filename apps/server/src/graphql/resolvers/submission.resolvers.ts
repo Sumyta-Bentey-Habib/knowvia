@@ -245,6 +245,36 @@ export const submissionResolvers = {
                 }
 
                 if (args.decision === "APPROVE") {
+                    const provider = await tx.provider.findFirst({
+                        where: {
+                            id: submission.providerId,
+                            isActive: true,
+                        },
+                        select: { id: true },
+                    });
+
+                    if (!provider) {
+                        badInput(
+                            "Cannot approve this submission because its provider is inactive.",
+                        );
+                    }
+
+                    if (submission.categoryId) {
+                        const category = await tx.category.findFirst({
+                            where: {
+                                id: submission.categoryId,
+                                isActive: true,
+                            },
+                            select: { id: true },
+                        });
+
+                        if (!category) {
+                            badInput(
+                                "Cannot approve this submission because its category is inactive.",
+                            );
+                        }
+                    }
+
                     await tx.resource.create({
                         data: {
                             title: submission.title,
