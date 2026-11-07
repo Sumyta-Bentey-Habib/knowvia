@@ -64,11 +64,12 @@ export const commonSchema = `#graphql
     REJECT
   }
 
-  type Provider {
+    type Provider {
     id: ID!
     name: String!
     slug: String!
     websiteUrl: String
+    isActive: Boolean!
   }
 
   type Category {
@@ -76,6 +77,8 @@ export const commonSchema = `#graphql
     name: String!
     slug: String!
     description: String
+    isActive: Boolean!
+    parentId: ID
   }
 
   type PageInfo {
