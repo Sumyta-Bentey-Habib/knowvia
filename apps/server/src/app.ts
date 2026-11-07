@@ -7,10 +7,10 @@ import express from "express";
 import { auth } from "./auth.js";
 import { resolvers } from "./graphql/resolvers.js";
 import { typeDefs } from "./graphql/typeDefs.js";
-import type { GraphQLContext } from "./types/context.js";
+import type { AppContext, GraphQLContext } from "./types/context.js";
 import { fromNodeHeaders } from "better-auth/node";
 
-export async function createApp(context: GraphQLContext) {
+export async function createApp(context: AppContext) {
   const app = express();
 
   const webOrigin = process.env.WEB_ORIGIN;
