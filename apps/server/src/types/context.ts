@@ -5,7 +5,10 @@ export type AuthSession = Awaited<
   ReturnType<typeof auth.api.getSession>
 >;
 
-export type GraphQLContext = {
+export type AppContext = {
   prisma: typeof prisma;
+};
+
+export type GraphQLContext = AppContext & {
   session: AuthSession;
 };
